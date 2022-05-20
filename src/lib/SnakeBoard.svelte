@@ -258,27 +258,30 @@
         </div>
     </div>
     {#if gameOver}
-        <div class="text-7xl p-20 text-red-700 absolute top-1/3 border-2 border-red-500 bg-amber-300">You lost! 🐍
-            <button on:click={() => {
+       <div class="absolute top-1/3 700 bg-[#305078]">
+           <h1 class="text-7xl p-10 text-white">You lost! 🐍</h1>
+           <div class="flex flex-row justify-center ">
+               <button class="text-white text-2xl p-4 border-2 m-5 hover:bg-green-500" on:click={() => {
                 gameOver = false;
                 snake = getInitialSnake().slice();
                 fruits = getInitialFruits().slice();
                 paintSnake();
             }}>Play again!
-            </button>
-        </div>
+               </button>
+           </div>
+       </div>
     {/if}
     {#if username === ""}
         <div class="text-3xl p-10 text-red-700 absolute top-1/3  bg-[#305078]">
             <div class="">
-                <div class="flex flex-row gap-3">
-                    <h1 class="text-2xl text-white">Your name:</h1>
+                <div class="flex flex-col gap-3">
+                    <h1 class="text-2xl text-white pb-2">Please enter your name</h1>
                     <input bind:value={inputUsername} type="text" class="mr-2"/>
                 </div>
                 <h1 class="text-3xl text-white pt-4 pb-2">{username}</h1>
                 {#if inputUsername !== ""}
                     <div class="flex flex-row justify-center">
-                        <button on:click={() => {username = inputUsername}} class="text-white shadow-white">Lets go!</button>
+                        <button on:click={() => {username = inputUsername}} class="text-white text-2xl p-4 border-2 m-5 hover:bg-green-500">Lets go!</button>
                     </div>
                 {/if}
             </div>

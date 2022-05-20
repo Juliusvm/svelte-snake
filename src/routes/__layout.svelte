@@ -1,6 +1,5 @@
 <script context="module" lang="ts">
     import "../app.css";
-
     import { initializeApp } from "firebase/app";
     import { getFirestore, collection,onSnapshot,where, setDoc,doc, query } from 'firebase/firestore';
     import {scores} from "../store";
@@ -36,5 +35,4 @@
 
 
 </script>
-
 <slot />
