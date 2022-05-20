@@ -1,21 +1,20 @@
 <script lang="ts">
     import fruit from '../lib/assets/fruit.svg';
-
-    interface Cell {
-        x: number,
-        y: number
-    }
+    import type {Cell} from '../cell';
+    import {generateRandom} from "../snake_logic";
 
     let gameOver = false;
     let fruitEaten = 0;
-    const cols = 8;
-    const rows = 10;
+
+    const cols = 12;
+    const rows = 16;
     let cells = [];
-    let snake: Cell[] = [{x: 4, y: 0},{x: 3, y: 0},{x: 2, y: 0}, {x: 1, y: 0},{x: 0, y: 0}];
-    let fruits: Cell[] = [{x: 5, y: 5},{x: 9, y: 5}];
-    let direction = "west"
+    let snake: Cell[] = [{x: 5, y: 3}, {x: 4, y: 3}, {x: 3, y: 3}, {x: 2, y: 3}];
+    let fruits: Cell[] = [{x: 6, y: 6}];
+    let direction = ""
     let key;
     let keyCode;
+    let checked = false;
 
 
     function generateCells() {
@@ -30,14 +29,26 @@
     }
 
 
+    function willCollide(x: number, y: number) {
+        if (snake.filter(s => (s.x === x && s.y === y)).length > 0) {
+            gameOver = true;
+            clearInterval(interval);
+        }
+        if ((x > rows || y > cols || x < 0 || y < 0)) {
+            gameOver = true;
+            clearInterval(interval);
+        }
+    }
+
     function moveRight() {
         const tempArray = JSON.parse(JSON.stringify(snake));
         for (let i = 0; i < snake.length; i++) {
             if (i == 0) {
-                snake[i].x = {...snake[i]}.x+1;
-                handleNextMove(snake[i]);
+                willCollide(snake[i].x + 1, snake[i].y);
+                snake[i].x = {...snake[i]}.x + 1;
+                eatFruitIfPresent(snake[i]);
             } else {
-                snake[i] = {x: tempArray[i-1].x, y:tempArray[i-1].y}
+                snake[i] = {x: tempArray[i - 1].x, y: tempArray[i - 1].y}
             }
         }
         paintSnake();
@@ -47,52 +58,55 @@
         const tempArray = JSON.parse(JSON.stringify(snake));
         for (let i = 0; i < snake.length; i++) {
             if (i == 0) {
-                snake[i].x = {...snake[i]}.x-1;
-                handleNextMove(snake[i]);
+                willCollide(snake[i].x - 1, snake[i].y);
+                snake[i].x = {...snake[i]}.x - 1;
+                eatFruitIfPresent(snake[i]);
             } else {
-                snake[i] = {x: tempArray[i-1].x, y:tempArray[i-1].y}
+                snake[i] = {x: tempArray[i - 1].x, y: tempArray[i - 1].y}
             }
         }
         paintSnake();
     }
 
-    function moveDown(){
+    function moveDown() {
         const tempArray = JSON.parse(JSON.stringify(snake));
         for (let i = 0; i < snake.length; i++) {
             if (i == 0) {
-                snake[i].y = {...snake[i]}.y+1;
-                handleNextMove(snake[i]);
+                willCollide(snake[i].x, snake[i].y + 1);
+                snake[i].y = {...snake[i]}.y + 1;
+                eatFruitIfPresent(snake[i]);
             } else {
-                snake[i] = {x: tempArray[i-1].x, y:tempArray[i-1].y}
+                snake[i] = {x: tempArray[i - 1].x, y: tempArray[i - 1].y}
             }
         }
         paintSnake();
     }
 
-    function moveUp(){
+    function moveUp() {
         const tempArray = JSON.parse(JSON.stringify(snake));
         for (let i = 0; i < snake.length; i++) {
             if (i == 0) {
-                snake[i].y = {...snake[i]}.y-1;
-                handleNextMove(snake[i]);
+                willCollide(snake[i].x, snake[i].y - 1);
+                snake[i].y = {...snake[i]}.y - 1;
+                eatFruitIfPresent(snake[i]);
             } else {
-                snake[i] = {x: tempArray[i-1].x, y:tempArray[i-1].y}
+                snake[i] = {x: tempArray[i - 1].x, y: tempArray[i - 1].y}
             }
         }
         paintSnake();
     }
 
-    setInterval(() => {
-        if(direction == "right"){
+    const interval = setInterval(() => {
+        if (direction == "right") {
             moveRight();
         }
-        if(direction == "left"){
+        if (direction == "left") {
             moveLeft();
         }
-        if(direction == "down"){
+        if (direction == "down") {
             moveDown();
         }
-        if(direction == "up") {
+        if (direction == "up") {
             moveUp();
         }
 
@@ -100,14 +114,22 @@
 
     cells = generateCells();
 
-    function handleNextMove(cell: Cell) {
-        if(cell.x > rows || cell.y > cols || cell.x < 0 || cell.y < 0){
-            gameOver = true;
-        }
+
+    function eatFruitIfPresent(cell: Cell) {
         let fruit = fruits.filter(f => f.y === cell.y && f.x == cell.x);
-        if(fruit.length > 0){
+        if (fruit.length > 0) {
             fruits.splice(fruits.indexOf(fruit[0]), 1);
             fruitEaten++;
+            snake.push({x: 0, y: 0})
+
+            let x = generateRandom(0, rows)
+            let y = generateRandom(0, cols)
+
+            while (snake.filter(s => (s.x == x && s.y === y)).length > 0) {
+                x = generateRandom(0, rows)
+                y = generateRandom(0, cols)
+            }
+            fruits.push({x: x, y: y})
         }
     }
 
@@ -115,28 +137,35 @@
         key = event.key;
         keyCode = event.keyCode;
         if (event.key === 'ArrowRight') {
-            direction = "right";
+            if (direction !== "left") {
+                direction = "right";
+            }
         }
         if (event.key === 'ArrowLeft') {
-            direction = "left";
+            if (direction !== "right") {
+                direction = "left";
+            }
         }
         if (event.key === 'ArrowDown') {
-            direction = "down";
+            if (direction !== "up") {
+                direction = "down";
+            }
         }
         if (event.key === 'ArrowUp') {
-            direction = "up";
+            if (direction !== "down") {
+                direction = "up";
+            }
         }
     }
 
     function paintSnake() {
         for (let y = 0; y <= cols; y++) {
             for (let j = 0; j <= rows; j++) {
-                if(snake.filter(s => (s.y === y && s.x === j)).length > 0){
+                if (snake.filter(s => (s.y === y && s.x === j)).length > 0) {
                     cells[y][j] = "player";
-                }
-                else if(fruits.filter(s => (s.y === y && s.x === j)).length > 0){
+                } else if (fruits.filter(s => (s.y === y && s.x === j)).length > 0) {
                     cells[y][j] = "fruit";
-                }else{
+                } else {
                     cells[y][j] = "cell";
                 }
             }
@@ -149,31 +178,33 @@
 
 <h1 class="text-2xl">Fruits eaten {fruitEaten}</h1>
 
-
-{#if gameOver}
-
-    <div class="text-7xl p-20">You lost!</div>
-{/if}
-
-{#if !gameOver}
-    {#each cells as cell, y}
-        <div class="flex flex-row gap-1 flex-wrap mb-2">
-            <div class="flex flex-row gap-2">
-                {#each cell as c, x}
-                    {#if cells[y][x] === "cell"}
-                        <div class={"h-24 w-24 bg-black"}></div>
-                    {/if}
-                    {#if cells[y][x] === "fruit"}
-                        <img alt="123" class="h-24 w-24" src={fruit}/>
-                    {/if}
-                    {#if cells[y][x] === "player"}
-                        <div class={"h-24 w-24 bg-red-500 animate-pulse"}></div>
-                    {/if}
-                {/each}
+<div class="flex flex-row justify-center absolute left-1/3">
+    <div class="bg-gray-400">
+        {#each cells as cell, y}
+            <div class="flex flex-row flex-wrap w-1/2">
+                <div class="flex flex-row">
+                    {#each cell as c, x}
+                        {#if cells[y][x] === "cell"}
+                            <div class={"h-12 w-12 bg-black"}></div>
+                        {/if}
+                        {#if cells[y][x] === "fruit"}
+                            <!--                            <img alt="123" class="h-12 h-12 object-contain" src={fruit}/>-->
+                            <div class={"h-12 w-12 bg-green-500"}></div>
+                        {/if}
+                        {#if cells[y][x] === "player"}
+                            <div class={"h-12 w-12 bg-green-400 animate-pulse"}></div>
+                        {/if}
+                    {/each}
+                </div>
             </div>
-        </div>
-    {/each}
-{/if}
+        {/each}
+    </div>
 
+    {#if gameOver}
+
+        <div class="text-7xl p-20 text-red-700 absolute top-1/3 border-2 border-red-500 bg-amber-300">You lost! 😞
+        </div>
+    {/if}
+</div>
 
 <svelte:window on:keydown={handleKeydown}/>

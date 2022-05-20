@@ -1,5 +1,6 @@
 <script lang="ts">
     import fruit from '../lib/assets/fruit.svg';
+    import backgroundGif from '../lib/assets/background.gif';
     import type {Cell} from '../cell';
     import {generateRandom} from "../snake_logic";
 
@@ -14,7 +15,7 @@
     let direction = ""
     let key;
     let keyCode;
-
+    let runThroughWalls = false;
 
     function generateCells() {
         const cells = [];
@@ -28,23 +29,33 @@
     }
 
 
-    function willCollide(x: number, y: number) {
+    function willCollideWithItself(x: number, y: number) {
         if (snake.filter(s => (s.x === x && s.y === y)).length > 0) {
             gameOver = true;
             clearInterval(interval);
         }
+    }
+    function willCollideWithWall(x: number, y: number) {
         if ((x > rows || y > cols || x < 0 || y < 0)) {
             gameOver = true;
             clearInterval(interval);
         }
     }
 
+
     function moveRight() {
         const tempArray = JSON.parse(JSON.stringify(snake));
         for (let i = 0; i < snake.length; i++) {
             if (i == 0) {
-                willCollide(snake[i].x + 1, snake[i].y);
-                snake[i].x = {...snake[i]}.x + 1;
+                willCollideWithItself(snake[i].x + 1, snake[i].y);
+                willCollideWithWall(snake[i].x + 1, snake[i].y);
+                // if(snake[i].x + 1 > rows){
+                //     console.log("yes")
+                //     snake[i].x = 0;
+                // }else{
+                 snake[i].x = {...snake[i]}.x + 1;
+                // }
+
                 eatFruitIfPresent(snake[i]);
             } else {
                 snake[i] = {x: tempArray[i - 1].x, y: tempArray[i - 1].y}
@@ -57,7 +68,8 @@
         const tempArray = JSON.parse(JSON.stringify(snake));
         for (let i = 0; i < snake.length; i++) {
             if (i == 0) {
-                willCollide(snake[i].x - 1, snake[i].y);
+                willCollideWithItself(snake[i].x - 1, snake[i].y);
+                willCollideWithWall(snake[i].x - 1, snake[i].y);
                 snake[i].x = {...snake[i]}.x - 1;
                 eatFruitIfPresent(snake[i]);
             } else {
@@ -71,7 +83,12 @@
         const tempArray = JSON.parse(JSON.stringify(snake));
         for (let i = 0; i < snake.length; i++) {
             if (i == 0) {
-                willCollide(snake[i].x, snake[i].y + 1);
+                willCollideWithItself(snake[i].x, snake[i].y + 1);
+                if(runThroughWalls && snake[i].y + 1 > cols){
+                    snake[i].y = -1;
+                }else {
+                    willCollideWithWall(snake[i].x, snake[i].y + 1);
+                }
                 snake[i].y = {...snake[i]}.y + 1;
                 eatFruitIfPresent(snake[i]);
             } else {
@@ -85,8 +102,14 @@
         const tempArray = JSON.parse(JSON.stringify(snake));
         for (let i = 0; i < snake.length; i++) {
             if (i == 0) {
-                willCollide(snake[i].x, snake[i].y - 1);
-                snake[i].y = {...snake[i]}.y - 1;
+                willCollideWithItself(snake[i].x, snake[i].y - 1);
+                if(runThroughWalls && snake[i].y - 1 < 0){
+                    snake[i].y = cols;
+                }else{
+                    willCollideWithWall(snake[i].x, snake[i].y - 1);
+                    snake[i].y = {...snake[i]}.y - 1;
+                }
+
                 eatFruitIfPresent(snake[i]);
             } else {
                 snake[i] = {x: tempArray[i - 1].x, y: tempArray[i - 1].y}
@@ -175,13 +198,22 @@
 
 </script>
 
-<h1 class="text-2xl">Fruits eaten {fruitEaten}</h1>
+<img src={backgroundGif} alt="this slowpoke moves"  class="w-full h-full absolute" />
 
-<div class="flex flex-row justify-center">
-    <div class="bg-gray-400 p-10">
+<div class="w-64 h-64 bg-white absolute flex flex-col gap-5 p-5">
+    <h1 class="text-2xl ">Fruits eaten: {fruitEaten}</h1>
+    <label class="text-2xl">
+        <input type=checkbox bind:checked={runThroughWalls}>
+        Run through walls
+    </label>
+</div>
+
+
+<div class="flex flex-row justify-center absolute left-1/3">
+    <div class="bg-gray-400">
         {#each cells as cell, y}
-            <div class="flex flex-row flex-wrap mb-2 w-1/2">
-                <div class="flex flex-row gap-2">
+            <div class="flex flex-row flex-wrap w-1/2">
+                <div class="flex flex-row">
                     {#each cell as c, x}
                         {#if cells[y][x] === "cell"}
                             <div class={"h-12 w-12 bg-black"}></div>
@@ -198,12 +230,12 @@
             </div>
         {/each}
     </div>
+
+    {#if gameOver}
+
+        <div class="text-7xl p-20 text-red-700 absolute top-1/3 border-2 border-red-500 bg-amber-300">You lost! 😞
+        </div>
+    {/if}
 </div>
-
-{#if gameOver}
-
-    <div class="text-7xl p-20 text-red-700 absolute top-1/3 left-1/3 border-2 border-red-500 bg-amber-300">You lost!
-    </div>
-{/if}
 
 <svelte:window on:keydown={handleKeydown}/>
