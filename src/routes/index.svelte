@@ -3,6 +3,7 @@
     import backgroundGif from '../lib/assets/background.gif';
     import type {Cell} from '../cell';
     import {generateRandom} from "../snake_logic";
+    import {scores} from '../store';
 
     let gameOver = false;
     let fruitEaten = 0;
@@ -204,12 +205,16 @@
 
 <img src={backgroundGif} alt="this slowpoke moves" class="w-full h-full absolute"/>
 
-<div class="w-64 h-64 bg-white absolute flex flex-col gap-5 p-5">
+<div class="w-64 bg-white absolute flex flex-col gap-5 p-5">
     <h1 class="text-2xl ">Fruits eaten: {fruitEaten}</h1>
     <label class="text-2xl">
         <input type=checkbox bind:checked={runThroughWalls}>
         Run through walls
     </label>
+    <h1 class="text-2xl">High score</h1>
+    {#each $scores as score}
+        <h1>Name: {score.id}, score: {score.score}</h1>
+    {/each}
 </div>
 
 
