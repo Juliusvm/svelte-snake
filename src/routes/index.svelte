@@ -2,7 +2,7 @@
     import fruit from '../lib/assets/fruit.svg';
     import backgroundGif from '../lib/assets/background.gif';
     import type {Cell} from '../cell';
-    import {generateRandom} from "../snake_logic";
+    import {generateCells, generateRandom, getInitialFruits, getInitialSnake} from "../logic/snake_logic";
     import {scores} from '../store';
     import {setSnakeScore} from "./__layout.svelte";
 
@@ -12,38 +12,41 @@
     const cols = 12;
     const rows = 16;
     let cells = [];
-    let snake: Cell[] = [{x: 5, y: 3}, {x: 4, y: 3}, {x: 3, y: 3}, {x: 2, y: 3}];
-    let fruits: Cell[] = [{x: 6, y: 6}];
+    let snake: Cell[] = getInitialSnake();
+    let fruits: Cell[] = getInitialFruits();
+    let interval;
     let direction = ""
+    let username = "";
     let key;
     let keyCode;
     let runThroughWalls = false;
 
-    function generateCells() {
-        const cells = [];
-        for (let i = 0; i <= cols; i++) {
-            cells[i] = [];
-            for (let j = 0; j <= rows; j++) {
-                cells[i][j] = "cell";
-            }
+
+    function willCollideWithItself(snake, x: number, y: number) {
+        if (snake.filter(s => (s.x === x && s.y === y)).length > 0) {
+            setGameOver();
+            return true;
         }
-        return cells;
+        return false;
+
     }
 
-
-    function willCollideWithItself(x: number, y: number) {
-        if (snake.filter(s => (s.x === x && s.y === y)).length > 0) {
-            gameOver = true;
-            clearInterval(interval);
-        }
+    function setGameOver() {
+        gameOver = true;
+        clearInterval(interval);
+        setSnakeScore(username, fruitEaten);
+        snake = [];
+        fruits = [];
+        direction = "";
+        paintSnake();
     }
 
     function willCollideWithWall(x: number, y: number) {
         if ((x > rows || y > cols || x < 0 || y < 0)) {
-            gameOver = true;
-            clearInterval(interval);
-             setSnakeScore("julle", fruitEaten);
+            setGameOver();
+            return true;
         }
+        return false;
     }
 
 
@@ -51,26 +54,28 @@
         const tempArray = JSON.parse(JSON.stringify(snake));
         for (let i = 0; i < snake.length; i++) {
             if (i == 0) {
-                willCollideWithItself(snake[i].x + 1, snake[i].y);
-                if (runThroughWalls && snake[i].x + 1 > rows) {
-                    snake[i].x = 0;
-                } else {
-                    willCollideWithWall(snake[i].x + 1, snake[i].y);
-                    snake[i].x = {...snake[i]}.x + 1;
+                if (!willCollideWithItself(snake, snake[i].x + 1, snake[i].y)) {
+
+                    if (runThroughWalls && snake[i].x + 1 > rows) {
+                        snake[i].x = 0;
+                    } else {
+                        if (!willCollideWithWall(snake[i].x + 1, snake[i].y)) {
+                            snake[i].x = {...snake[i]}.x + 1;
+                        }
+                    }
+                    eatFruitIfPresent(snake[i]);
                 }
-                eatFruitIfPresent(snake[i]);
             } else {
                 snake[i] = {x: tempArray[i - 1].x, y: tempArray[i - 1].y}
             }
         }
-        paintSnake();
     }
 
     function moveLeft() {
         const tempArray = JSON.parse(JSON.stringify(snake));
         for (let i = 0; i < snake.length; i++) {
             if (i == 0) {
-                willCollideWithItself(snake[i].x - 1, snake[i].y);
+                willCollideWithItself(snake, snake[i].x - 1, snake[i].y);
                 if (runThroughWalls && snake[i].x - 1 < 0) {
                     snake[i].x = rows;
                 } else {
@@ -83,14 +88,13 @@
                 snake[i] = {x: tempArray[i - 1].x, y: tempArray[i - 1].y}
             }
         }
-        paintSnake();
     }
 
     function moveDown() {
         const tempArray = JSON.parse(JSON.stringify(snake));
         for (let i = 0; i < snake.length; i++) {
             if (i == 0) {
-                willCollideWithItself(snake[i].x, snake[i].y + 1);
+                willCollideWithItself(snake, snake[i].x, snake[i].y + 1);
                 if (runThroughWalls && snake[i].y + 1 > cols) {
                     snake[i].y = -1;
                 } else {
@@ -102,46 +106,52 @@
                 snake[i] = {x: tempArray[i - 1].x, y: tempArray[i - 1].y}
             }
         }
-        paintSnake();
     }
 
     function moveUp() {
-        const tempArray = JSON.parse(JSON.stringify(snake));
+        const originalSnake = JSON.parse(JSON.stringify(snake));
+        let collided = false;
         for (let i = 0; i < snake.length; i++) {
-            if (i == 0) {
-                willCollideWithItself(snake[i].x, snake[i].y - 1);
-                if (runThroughWalls && snake[i].y - 1 < 0) {
-                    snake[i].y = cols;
-                } else {
-                    willCollideWithWall(snake[i].x, snake[i].y - 1);
-                    snake[i].y = {...snake[i]}.y - 1;
-                }
+            if (!collided) {
+                if (i == 0) {
+                    willCollideWithItself(snake, snake[i].x, snake[i].y - 1);
+                    if (runThroughWalls && snake[i].y - 1 < 0) {
+                        snake[i].y = cols;
+                    } else {
+                        willCollideWithWall(snake[i].x, snake[i].y - 1);
+                        snake[i].y = {...snake[i]}.y - 1;
+                    }
 
-                eatFruitIfPresent(snake[i]);
-            } else {
-                snake[i] = {x: tempArray[i - 1].x, y: tempArray[i - 1].y}
+                    eatFruitIfPresent(snake[i]);
+                } else {
+                    snake[i] = {x: originalSnake[i - 1].x, y: originalSnake[i - 1].y}
+                }
             }
         }
-        paintSnake();
     }
 
-    const interval = setInterval(() => {
-        if (direction == "right") {
-            moveRight();
-        }
-        if (direction == "left") {
-            moveLeft();
-        }
-        if (direction == "down") {
-            moveDown();
-        }
-        if (direction == "up") {
-            moveUp();
-        }
+    function startTimer() {
+        setInterval(() => {
+            if (direction == "right") {
+                moveRight();
+            }
+            if (direction == "left") {
+                moveLeft();
+            }
+            if (direction == "down") {
+                moveDown();
+            }
+            if (direction == "up") {
+                moveUp();
+            }
+            paintSnake();
 
-    }, 100)
+        }, 100)
+    }
 
-    cells = generateCells();
+    interval = startTimer();
+
+    cells = generateCells(cols, rows);
 
 
     function eatFruitIfPresent(cell: Cell) {
@@ -207,7 +217,14 @@
 
 <img src={backgroundGif} alt="this slowpoke moves" class="w-full h-full absolute"/>
 
-<div class="w-64 bg-[#305078] absolute flex flex-col gap-5 p-5">
+<div class="bg-[#305078] absolute flex flex-col gap-5 p-5">
+    <div class="">
+        <div class="flex flex-row gap-3">
+            <h1 class="text-2xl text-white">Your name:</h1>
+            <input bind:value={username} type="text" class="mr-2"/>
+        </div>
+        <h1 class="text-3xl text-white pt-4 pb-2">{username}</h1>
+    </div>
     <h1 class="text-3xl text-white">Settings:</h1>
     <label class="text-2xl text-white">
         <input type=checkbox bind:checked={runThroughWalls}>
@@ -220,41 +237,48 @@
     {/each}
 </div>
 
+{#if username !== ""}
 
-<div class="flex flex-row justify-center absolute left-1/3">
-    <div class="bg-gray-400">
-        {#each cells as cell, y}
-            <div class="flex flex-row flex-wrap w-1/2">
-                <div class="flex flex-row">
-                    {#each cell as c, x}
-                        {#if cells[y][x] === "cell"}
-                            <div class={"h-12 w-12 bg-black"}></div>
-                        {/if}
-                        {#if cells[y][x] === "fruit"}
-                            <!--                            <img alt="123" class="h-12 h-12 object-contain" src={fruit}/>-->
-                            <div class={"h-12 w-12 bg-green-500"}></div>
-                        {/if}
-                        {#if cells[y][x] === "player"}
-                            <div class={"h-12 w-12 bg-green-400 animate-pulse"}></div>
-                        {/if}
-                    {/each}
+
+    <div class="flex flex-row justify-center absolute left-1/3">
+        <div class="bg-gray-400">
+            {#each cells as cell, y}
+                <div class="flex flex-row flex-wrap w-1/2">
+                    <div class="flex flex-row">
+                        {#each cell as c, x}
+                            {#if cells[y][x] === "cell"}
+                                <div class={"h-12 w-12 bg-black"}></div>
+                            {/if}
+                            {#if cells[y][x] === "fruit"}
+                                <!--                            <img alt="123" class="h-12 h-12 object-contain" src={fruit}/>-->
+                                <div class={"h-12 w-12 bg-green-500"}></div>
+                            {/if}
+                            {#if cells[y][x] === "player"}
+                                <div class={"h-12 w-12 bg-green-400 animate-pulse"}></div>
+                            {/if}
+                        {/each}
+                    </div>
                 </div>
+            {/each}
+            <div class="flex flex-row justify-center bg-white p-2">
+                <h1 class="text-3xl ">Fruits eaten: {fruitEaten}</h1>
             </div>
-        {/each}
-        <div class="flex flex-row justify-center bg-white p-2">
-            <h1 class="text-3xl ">Fruits eaten: {fruitEaten}</h1>
+
         </div>
 
-    </div>
+        {#if gameOver}
 
-    {#if gameOver}
-
-        <div class="text-7xl p-20 text-red-700 absolute top-1/3 border-2 border-red-500 bg-amber-300">You lost! 🐍
-            <button on:click={() => {
+            <div class="text-7xl p-20 text-red-700 absolute top-1/3 border-2 border-red-500 bg-amber-300">You lost! 🐍
+                <button on:click={() => {
                 gameOver = false;
-            }}>Play again!</button>
-        </div>
-    {/if}
-</div>
+                snake = getInitialSnake().slice();
+                fruits = getInitialFruits().slice();
+                paintSnake();
+            }}>Play again!
+                </button>
+            </div>
+        {/if}
+    </div>
+{/if}
 
 <svelte:window on:keydown={handleKeydown}/>

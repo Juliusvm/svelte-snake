@@ -1,7 +1,7 @@
 <script lang="ts">
     import fruit from '../lib/assets/fruit.svg';
     import type {Cell} from '../cell';
-    import {generateRandom} from "../snake_logic";
+    import {generateRandom} from "../logic/snake_logic";
 
     let gameOver = false;
     let fruitEaten = 0;
