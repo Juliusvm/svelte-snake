@@ -3,7 +3,8 @@
     import { initializeApp } from "firebase/app";
     import { getFirestore, collection,onSnapshot,where, setDoc,doc, query } from 'firebase/firestore';
     import {scores} from "../store";
-
+    import Drawer from "svelte-drawer-component";
+    import arcade from '../lib/assets/arcade.jpg';
     const firebaseConfig = {
         apiKey: "AIzaSyDYmOCwylZ2_87UkDoQUfxqnffPtFup7wE",
         authDomain: "svelte-snake.firebaseapp.com",
@@ -35,4 +36,6 @@
 
 
 </script>
+<img src={arcade} alt="this slowpoke moves" class="w-full h-full absolute"/>
+<Drawer/>
 <slot />

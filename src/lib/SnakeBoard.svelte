@@ -1,6 +1,5 @@
 <script lang="ts">
     import fruit from './assets/fruit.svg';
-    import arcade from './assets/arcade.jpg';
     import backgroundGif from './assets/background.gif';
     import type {Cell} from '../cell';
     import {generateCells, generateRandom, getInitialFruits, getInitialSnake} from "../logic/snake_logic";
@@ -218,7 +217,7 @@
 
 </script>
 
-<img src={arcade} alt="this slowpoke moves" class="w-full h-full absolute"/>
+
 
 <div class="bg-[#305078] absolute flex flex-col gap-5 p-5">
     <h1 class="text-3xl text-white">Settings:</h1>
