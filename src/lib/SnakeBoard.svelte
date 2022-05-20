@@ -4,6 +4,7 @@
     import type {Cell} from '../cell';
     import {generateCells, generateRandom, getInitialFruits, getInitialSnake} from "../logic/snake_logic";
     import {scores} from '../store';
+    import {setSnakeScore} from "../routes/__layout.svelte";
 
     let gameOver = false;
     let fruitEaten = 0;
@@ -33,7 +34,8 @@
     function setGameOver() {
         gameOver = true;
         clearInterval(interval);
-        // setSnakeScore(username, fruitEaten);
+        setSnakeScore(username, fruitEaten);
+        fruitEaten = 0;
         snake = [];
         fruits = [];
         direction = "";

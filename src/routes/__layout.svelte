@@ -1,37 +1,42 @@
-<script lang="ts" context="module">
+<script context="module" lang="ts">
     import "../app.css";
 
-    // import { initializeApp } from "firebase/app";
-    // import { getFirestore, collection, setDoc,doc, query } from 'firebase/firestore';
+    import { initializeApp } from "firebase/app";
+    import { getFirestore, collection,onSnapshot,where, setDoc,doc, query } from 'firebase/firestore';
+    import {scores} from "../store";
     // import { collectionData,  } from 'rxfire/firestore';
     // import { tap } from 'rxjs/operators';
     // import {scores} from '../store';
-    //
-    // const firebaseConfig = {
-    //     apiKey: "AIzaSyDYmOCwylZ2_87UkDoQUfxqnffPtFup7wE",
-    //     authDomain: "svelte-snake.firebaseapp.com",
-    //     projectId: "svelte-snake",
-    //     storageBucket: "svelte-snake.appspot.com",
-    //     messagingSenderId: "224003443014",
-    //     appId: "1:224003443014:web:d87f6a636e30f25286bd47",
-    //     measurementId: "G-WX7Y5EWT9B"
-    // };
-    //
-    // const app = initializeApp(firebaseConfig);
-    // const firestore = getFirestore(app);
-    // const scoresRef = query(
-    //     collection(firestore, 'scores'),
-    // );
-    // collectionData(scoresRef, { idField: 'id' })
-    //     .pipe(
-    //     )
-    //     .subscribe(s => {  scores.set(s); })
-    //
-    //
-    // export function setSnakeScore(name, score){
-    //     const davidDocRef = doc(firestore, 'scores/' + name);
-    //     setDoc(davidDocRef, { id: name, score: score });
-    // }
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyDYmOCwylZ2_87UkDoQUfxqnffPtFup7wE",
+        authDomain: "svelte-snake.firebaseapp.com",
+        projectId: "svelte-snake",
+        storageBucket: "svelte-snake.appspot.com",
+        messagingSenderId: "224003443014",
+        appId: "1:224003443014:web:d87f6a636e30f25286bd47",
+        measurementId: "G-WX7Y5EWT9B"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const firestore = getFirestore(app);
+
+    const q = query(collection(firestore, "scores"));
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+        let scoress = [];
+        querySnapshot.forEach((doc) => {
+            console.log(doc.data())
+            scoress.push(doc.data());
+        });
+        scores.set(scoress);
+    });
+
+    export function setSnakeScore(name, score){
+        const davidDocRef = doc(firestore, 'scores/' + name);
+        setDoc(davidDocRef, { id: name, score: score });
+    }
+
+
 
 </script>
 
