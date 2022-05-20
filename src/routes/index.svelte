@@ -35,6 +35,7 @@
             clearInterval(interval);
         }
     }
+
     function willCollideWithWall(x: number, y: number) {
         if ((x > rows || y > cols || x < 0 || y < 0)) {
             gameOver = true;
@@ -48,14 +49,12 @@
         for (let i = 0; i < snake.length; i++) {
             if (i == 0) {
                 willCollideWithItself(snake[i].x + 1, snake[i].y);
-                willCollideWithWall(snake[i].x + 1, snake[i].y);
-                // if(snake[i].x + 1 > rows){
-                //     console.log("yes")
-                //     snake[i].x = 0;
-                // }else{
-                 snake[i].x = {...snake[i]}.x + 1;
-                // }
-
+                if (runThroughWalls && snake[i].x + 1 > rows) {
+                    snake[i].x = 0;
+                } else {
+                    willCollideWithWall(snake[i].x + 1, snake[i].y);
+                    snake[i].x = {...snake[i]}.x + 1;
+                }
                 eatFruitIfPresent(snake[i]);
             } else {
                 snake[i] = {x: tempArray[i - 1].x, y: tempArray[i - 1].y}
@@ -69,8 +68,13 @@
         for (let i = 0; i < snake.length; i++) {
             if (i == 0) {
                 willCollideWithItself(snake[i].x - 1, snake[i].y);
-                willCollideWithWall(snake[i].x - 1, snake[i].y);
-                snake[i].x = {...snake[i]}.x - 1;
+                if (runThroughWalls && snake[i].x - 1 < 0) {
+                    snake[i].x = rows;
+                } else {
+                    willCollideWithWall(snake[i].x - 1, snake[i].y);
+                    snake[i].x = {...snake[i]}.x - 1;
+                }
+
                 eatFruitIfPresent(snake[i]);
             } else {
                 snake[i] = {x: tempArray[i - 1].x, y: tempArray[i - 1].y}
@@ -84,9 +88,9 @@
         for (let i = 0; i < snake.length; i++) {
             if (i == 0) {
                 willCollideWithItself(snake[i].x, snake[i].y + 1);
-                if(runThroughWalls && snake[i].y + 1 > cols){
+                if (runThroughWalls && snake[i].y + 1 > cols) {
                     snake[i].y = -1;
-                }else {
+                } else {
                     willCollideWithWall(snake[i].x, snake[i].y + 1);
                 }
                 snake[i].y = {...snake[i]}.y + 1;
@@ -103,9 +107,9 @@
         for (let i = 0; i < snake.length; i++) {
             if (i == 0) {
                 willCollideWithItself(snake[i].x, snake[i].y - 1);
-                if(runThroughWalls && snake[i].y - 1 < 0){
+                if (runThroughWalls && snake[i].y - 1 < 0) {
                     snake[i].y = cols;
-                }else{
+                } else {
                     willCollideWithWall(snake[i].x, snake[i].y - 1);
                     snake[i].y = {...snake[i]}.y - 1;
                 }
@@ -198,7 +202,7 @@
 
 </script>
 
-<img src={backgroundGif} alt="this slowpoke moves"  class="w-full h-full absolute" />
+<img src={backgroundGif} alt="this slowpoke moves" class="w-full h-full absolute"/>
 
 <div class="w-64 h-64 bg-white absolute flex flex-col gap-5 p-5">
     <h1 class="text-2xl ">Fruits eaten: {fruitEaten}</h1>
@@ -219,7 +223,7 @@
                             <div class={"h-12 w-12 bg-black"}></div>
                         {/if}
                         {#if cells[y][x] === "fruit"}
-<!--                            <img alt="123" class="h-12 h-12 object-contain" src={fruit}/>-->
+                            <!--                            <img alt="123" class="h-12 h-12 object-contain" src={fruit}/>-->
                             <div class={"h-12 w-12 bg-green-500"}></div>
                         {/if}
                         {#if cells[y][x] === "player"}
