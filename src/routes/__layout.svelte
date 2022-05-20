@@ -1,10 +1,10 @@
-<script>
+<script lang="ts" context="module">
     import "../app.css";
 
     // Import the functions you need from the SDKs you need
     import { initializeApp } from "firebase/app";
-    import { getFirestore, collection, where, query } from 'firebase/firestore';
-    import { collectionData } from 'rxfire/firestore';
+    import { getFirestore, collection, setDoc,doc, query } from 'firebase/firestore';
+    import { collectionData,  } from 'rxfire/firestore';
     import { tap } from 'rxjs/operators';
     import {scores} from '../store';
 
@@ -24,7 +24,6 @@
     const scoresRef = query(
         collection(firestore, 'scores'),
     );
-
     collectionData(scoresRef, { idField: 'id' })
         .pipe(
             // tap(s => {
@@ -32,6 +31,12 @@
             // })
         )
         .subscribe(s => {  scores.set(s); })
+
+
+    export function setSnakeScore(name, score){
+        const davidDocRef = doc(firestore, 'scores/' + name);
+        setDoc(davidDocRef, { id: name, score: score });
+    }
 
 </script>
 

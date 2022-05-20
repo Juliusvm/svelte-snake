@@ -4,6 +4,7 @@
     import type {Cell} from '../cell';
     import {generateRandom} from "../snake_logic";
     import {scores} from '../store';
+    import {setSnakeScore} from "./__layout.svelte";
 
     let gameOver = false;
     let fruitEaten = 0;
@@ -41,6 +42,7 @@
         if ((x > rows || y > cols || x < 0 || y < 0)) {
             gameOver = true;
             clearInterval(interval);
+             setSnakeScore("julle", fruitEaten);
         }
     }
 
@@ -205,15 +207,16 @@
 
 <img src={backgroundGif} alt="this slowpoke moves" class="w-full h-full absolute"/>
 
-<div class="w-64 bg-white absolute flex flex-col gap-5 p-5">
-    <h1 class="text-2xl ">Fruits eaten: {fruitEaten}</h1>
-    <label class="text-2xl">
+<div class="w-64 bg-[#305078] absolute flex flex-col gap-5 p-5">
+    <h1 class="text-3xl text-white">Settings:</h1>
+    <label class="text-2xl text-white">
         <input type=checkbox bind:checked={runThroughWalls}>
         Run through walls
     </label>
-    <h1 class="text-2xl">High score</h1>
+    <div class="border-b-2"></div>
+    <h1 class="text-2xl text-white">High score</h1>
     {#each $scores as score}
-        <h1>Name: {score.id}, score: {score.score}</h1>
+        <h1 class="text-white">{score.id} - {score.score}</h1>
     {/each}
 </div>
 
@@ -238,11 +241,18 @@
                 </div>
             </div>
         {/each}
+        <div class="flex flex-row justify-center bg-white p-2">
+            <h1 class="text-3xl ">Fruits eaten: {fruitEaten}</h1>
+        </div>
+
     </div>
 
     {#if gameOver}
 
-        <div class="text-7xl p-20 text-red-700 absolute top-1/3 border-2 border-red-500 bg-amber-300">You lost! 😞
+        <div class="text-7xl p-20 text-red-700 absolute top-1/3 border-2 border-red-500 bg-amber-300">You lost! 🐍
+            <button on:click={() => {
+                gameOver = false;
+            }}>Play again!</button>
         </div>
     {/if}
 </div>
