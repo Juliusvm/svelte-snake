@@ -1,5 +1,6 @@
 <script lang="ts">
     import fruit from './assets/fruit.svg';
+    import arcade from './assets/arcade.jpg';
     import backgroundGif from './assets/background.gif';
     import type {Cell} from '../cell';
     import {generateCells, generateRandom, getInitialFruits, getInitialSnake} from "../logic/snake_logic";
@@ -17,6 +18,7 @@
     let interval;
     let direction = ""
     let username = "";
+    let inputUsername = "";
     let key;
     let keyCode;
     let runThroughWalls = false;
@@ -216,16 +218,9 @@
 
 </script>
 
-<img src={backgroundGif} alt="this slowpoke moves" class="w-full h-full absolute"/>
+<img src={arcade} alt="this slowpoke moves" class="w-full h-full absolute"/>
 
 <div class="bg-[#305078] absolute flex flex-col gap-5 p-5">
-    <div class="">
-        <div class="flex flex-row gap-3">
-            <h1 class="text-2xl text-white">Your name:</h1>
-            <input bind:value={username} type="text" class="mr-2"/>
-        </div>
-        <h1 class="text-3xl text-white pt-4 pb-2">{username}</h1>
-    </div>
     <h1 class="text-3xl text-white">Settings:</h1>
     <label class="text-2xl text-white">
         <input type=checkbox bind:checked={runThroughWalls}>
@@ -238,43 +233,56 @@
     {/each}
 </div>
 
-
-{#if username !== ""}
-    <div class="flex flex-row justify-center absolute left-1/3">
-        <div class="bg-gray-400">
-            {#each cells as cell, y}
-                <div class="flex flex-row flex-wrap w-1/2">
-                    <div class="flex flex-row">
-                        {#each cell as c, x}
-                            {#if cells[y][x] === "cell"}
-                                <div class={"h-12 w-12 bg-black"}></div>
-                            {/if}
-                            {#if cells[y][x] === "fruit"}
-                                <!--                            <img alt="123" class="h-12 h-12 object-contain" src={fruit}/>-->
-                                <div class={"h-12 w-12 bg-green-500"}></div>
-                            {/if}
-                            {#if cells[y][x] === "player"}
-                                <div class={"h-12 w-12 bg-green-400 animate-pulse"}></div>
-                            {/if}
-                        {/each}
-                    </div>
+<div class="flex flex-row justify-center absolute left-1/3 mt-20">
+    <div>
+        {#each cells as cell, y}
+            <div class="flex flex-row flex-wrap w-1/2">
+                <div class="flex flex-row">
+                    {#each cell as c, x}
+                        {#if cells[y][x] === "cell"}
+                            <div class={"h-12 w-12 bg-black opacity-90"}></div>
+                        {/if}
+                        {#if cells[y][x] === "fruit"}
+                            <!--                            <img alt="123" class="h-12 h-12 object-contain" src={fruit}/>-->
+                            <div class={"h-12 w-12 bg-green-500"}></div>
+                        {/if}
+                        {#if cells[y][x] === "player"}
+                            <div class={"h-12 w-12 bg-green-400 animate-pulse"}></div>
+                        {/if}
+                    {/each}
                 </div>
-            {/each}
-            <div class="flex flex-row justify-center bg-white p-2">
-                <h1 class="text-3xl ">Fruits eaten: {fruitEaten}</h1>
             </div>
+        {/each}
+        <div class="flex flex-row justify-center bg-white p-2">
+            <h1 class="text-3xl ">Fruits eaten: {fruitEaten}</h1>
         </div>
-        {#if gameOver}
-            <div class="text-7xl p-20 text-red-700 absolute top-1/3 border-2 border-red-500 bg-amber-300">You lost! 🐍
-                <button on:click={() => {
+    </div>
+    {#if gameOver}
+        <div class="text-7xl p-20 text-red-700 absolute top-1/3 border-2 border-red-500 bg-amber-300">You lost! 🐍
+            <button on:click={() => {
                 gameOver = false;
                 snake = getInitialSnake().slice();
                 fruits = getInitialFruits().slice();
                 paintSnake();
             }}>Play again!
-                </button>
+            </button>
+        </div>
+    {/if}
+    {#if username === ""}
+        <div class="text-3xl p-10 text-red-700 absolute top-1/3  bg-[#305078]">
+            <div class="">
+                <div class="flex flex-row gap-3">
+                    <h1 class="text-2xl text-white">Your name:</h1>
+                    <input bind:value={inputUsername} type="text" class="mr-2"/>
+                </div>
+                <h1 class="text-3xl text-white pt-4 pb-2">{username}</h1>
+                {#if inputUsername !== ""}
+                    <div class="flex flex-row justify-center">
+                        <button on:click={() => {username = inputUsername}} class="text-white shadow-white">Lets go!</button>
+                    </div>
+                {/if}
             </div>
-        {/if}
-    </div>
-{/if}
+        </div>
+    {/if}
+</div>
 <svelte:window on:keydown={handleKeydown}/>

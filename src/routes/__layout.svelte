@@ -4,9 +4,6 @@
     import { initializeApp } from "firebase/app";
     import { getFirestore, collection,onSnapshot,where, setDoc,doc, query } from 'firebase/firestore';
     import {scores} from "../store";
-    // import { collectionData,  } from 'rxfire/firestore';
-    // import { tap } from 'rxjs/operators';
-    // import {scores} from '../store';
 
     const firebaseConfig = {
         apiKey: "AIzaSyDYmOCwylZ2_87UkDoQUfxqnffPtFup7wE",
@@ -32,8 +29,8 @@
     });
 
     export function setSnakeScore(name, score){
-        const davidDocRef = doc(firestore, 'scores/' + name);
-        setDoc(davidDocRef, { id: name, score: score });
+        const snakeScoreRef = doc(firestore, 'scores/' + name);
+        setDoc(snakeScoreRef, { id: name, score: score });
     }
 
 
