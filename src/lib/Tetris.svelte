@@ -1,13 +1,23 @@
 <script lang="ts">
     import type {Cell} from '../cell';
     import {generateCells, generateRandom, getInitialFruits, getInitialSnake} from "../logic/snake_logic";
+    import type {Figure} from "../logic/tetris_logic";
+    import {
+        getFigureFive,
+        getFigureFour,
+        getFigureOne,
+        getFigureSeven,
+        getFigureSix,
+        getFigureTwo, getRandomFigure
+    } from "../logic/tetris_logic";
 
     let fruitEaten = 0;
 
     const cols = 20;
     const rows = 14;
     let cells = [];
-    let snake: Cell[] =  [{x: 5, y: 3}, {x: 4, y: 3}, {x: 3, y: 3}, {x: 2, y: 3}];
+    let fallingPiece: Figure =  getFigureOne();
+    let accumulatedPieces: Cell[] =  [];
     let interval;
     let direction = ""
     let key;
@@ -24,32 +34,27 @@
         key = event.key;
         keyCode = event.keyCode;
         if (event.key === 'ArrowRight') {
-            if (direction !== "left") {
-                direction = "right";
-            }
+            fallingPiece.moveRight();
         }
         if (event.key === 'ArrowLeft') {
-            if (direction !== "right") {
-                direction = "left";
-            }
+            fallingPiece.moveLeft();
         }
         if (event.key === 'ArrowDown') {
-            if (direction !== "up") {
-                direction = "down";
-            }
+            fallingPiece.moveDown();
         }
         if (event.key === 'ArrowUp') {
-            if (direction !== "down") {
-                direction = "up";
-            }
+            fallingPiece.rotateRight();
         }
+        paintSnake()
     }
 
     function paintSnake() {
         for (let y = 0; y <= cols; y++) {
             for (let j = 0; j <= rows; j++) {
-                if (snake.filter(s => (s.y === y && s.x === j)).length > 0) {
+                if (fallingPiece.body.filter(s => (s.y === y && s.x === j)).length > 0) {
                     cells[y][j] = "player";
+                } else if (accumulatedPieces.filter(s => (s.y === y && s.x === j)).length > 0) {
+                    cells[y][j] = "fruit";
                 } else {
                     cells[y][j] = "cell";
                 }
@@ -59,8 +64,27 @@
 
     paintSnake();
 
-</script>
+    function startTimer() {
+        setInterval(() => {
 
+            if( accumulatedPieces.filter(aP => fallingPiece.body.find(p => (p.y + 1 === aP.y && p.x === aP.x))).length > 0){
+                accumulatedPieces = [...accumulatedPieces, ...fallingPiece.body.slice()];
+                fallingPiece = getFigureOne();
+            }
+            else if(fallingPiece.body.filter( p => p.y >= (cols)).length > 0){
+                accumulatedPieces = [...accumulatedPieces, ...fallingPiece.body.slice()];
+                fallingPiece = getFigureOne();
+            }else{fallingPiece.moveDown();}
+            paintSnake();
+
+        }, 500)
+    }
+
+    interval = startTimer();
+
+
+</script>
+<h1 class="text-white text-7xl absolute top-1/3">Hej</h1>
 <div class="flex flex-row justify-center absolute left-1/3 mt-20">
     <div>
         {#each cells as cell, y}
@@ -75,7 +99,7 @@
                             <div class={"h-12 w-12 bg-green-500"}></div>
                         {/if}
                         {#if cells[y][x] === "player"}
-                            <div class={"h-12 w-12 bg-green-400 animate-pulse"}></div>
+                            <div class={"h-12 w-12 bg-green-400"}></div>
                         {/if}
                     {/each}
                 </div>
