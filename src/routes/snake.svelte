@@ -1,10 +1,8 @@
 <script lang="ts">
     import fruit from '../lib/assets/fruit.svg';
-    import backgroundGif from '../lib/assets/background.gif';
     import type {Cell} from '../cell';
     import {generateCells, generateRandom, getInitialFruits, getInitialSnake} from "../logic/snake_logic";
     import {scores} from '../store';
-    // import {setSnakeScore} from "../routes/__layout.svelte";
 
     let gameOver = false;
     let fruitEaten = 0;
@@ -29,14 +27,12 @@
             return true;
         }
         return false;
-
     }
 
     function setGameOver() {
         gameOver = true;
         clearInterval(interval);
         // setSnakeScore(username, fruitEaten);
-        fruitEaten = 0;
         snake = [];
         fruits = [];
         direction = "";
@@ -218,21 +214,10 @@
 </script>
 
 
-
-<!--<div class="bg-[#305078] absolute flex flex-col gap-5 p-5">-->
-<!--    <h1 class="text-3xl text-white">Settings:</h1>-->
-<!--    <label class="text-2xl text-white">-->
-<!--        <input type=checkbox bind:checked={runThroughWalls}>-->
-<!--        Run through walls-->
-<!--    </label>-->
-<!--    <div class="border-b-2"></div>-->
-<!--    <h1 class="text-2xl text-white">High score</h1>-->
-<!--    {#each $scores as score}-->
-<!--        <h1 class="text-white">{score.id} - {score.score}</h1>-->
-<!--    {/each}-->
-<!--</div>-->
-
 <div class="flex flex-row justify-center absolute left-1/3 mt-20">
+    <div class="flex flex-row justify-center p-2 absolute left-0 z-50">
+        <h1 class="text-3xl text-green-500">{fruitEaten}</h1>
+    </div>
     <div>
         {#each cells as cell, y}
             <div class="flex flex-row flex-wrap w-1/2">
@@ -252,23 +237,33 @@
                 </div>
             </div>
         {/each}
-        <div class="flex flex-row justify-center bg-white p-2">
-            <h1 class="text-3xl ">Fruits eaten: {fruitEaten}</h1>
+        <div class="bg-[#305078] flex flex-col gap-5 p-5">
+            <h1 class="text-3xl text-white">Settings:</h1>
+            <label class="text-2xl text-white">
+                <input type=checkbox bind:checked={runThroughWalls}>
+                Run through walls
+            </label>
+            <div class="border-b-2"></div>
+            <h1 class="text-2xl text-white">High score</h1>
+            {#each $scores as score}
+                <h1 class="text-white">{score.id} - {score.score}</h1>
+            {/each}
         </div>
     </div>
     {#if gameOver}
-       <div class="absolute top-1/3 700 bg-[#305078]">
-           <h1 class="text-7xl p-10 text-white">You lost! 🐍</h1>
-           <div class="flex flex-row justify-center ">
-               <button class="text-white text-2xl p-4 border-2 m-5 hover:bg-green-500" on:click={() => {
+        <div class="absolute top-1/3 700 bg-[#305078]">
+            <h1 class="text-7xl p-10 text-white">You lost! 🐍</h1>
+            <div class="flex flex-row justify-center ">
+                <button class="text-white text-2xl p-4 border-2 m-5 hover:bg-green-500" on:click={() => {
+                     fruitEaten = 0;
                 gameOver = false;
                 snake = getInitialSnake().slice();
                 fruits = getInitialFruits().slice();
                 paintSnake();
             }}>Play again!
-               </button>
-           </div>
-       </div>
+                </button>
+            </div>
+        </div>
     {/if}
     {#if username === ""}
         <div class="text-3xl p-10 text-red-700 absolute top-1/3  bg-[#305078]">
@@ -280,7 +275,9 @@
                 <h1 class="text-3xl text-white pt-4 pb-2">{username}</h1>
                 {#if inputUsername !== ""}
                     <div class="flex flex-row justify-center">
-                        <button on:click={() => {username = inputUsername}} class="text-white text-2xl p-4 border-2 m-5 hover:bg-green-500">Lets go!</button>
+                        <button on:click={() => {username = inputUsername}}
+                                class="text-white text-2xl p-4 border-2 m-5 hover:bg-green-500">Lets go!
+                        </button>
                     </div>
                 {/if}
             </div>

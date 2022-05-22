@@ -7,16 +7,22 @@ export interface Figure{
     moveRight(): void;
     moveLeft(): void;
     moveDown(): void;
-
 }
 
 class FigureOne implements Figure{
     body: Cell[];
     constructor(body: Cell[]) {this.body = body;}
     rotateRight(): void {
-        this.body = [{x: this.body[0].x + 2, y: this.body[0].y - 2 },
-            {x: this.body[1].x + 1, y: this.body[1].y - 1},
-            {x: this.body[2].x, y: this.body[2].y},  {x: this.body[3].x - 1, y: this.body[3].y + 1},]
+        if(this.body[0].y === this.body[1].y){
+            this.body = [{x: this.body[0].x + 2, y: this.body[0].y - 2 },
+                {x: this.body[1].x + 1, y: this.body[1].y - 1},
+                {x: this.body[2].x, y: this.body[2].y},  {x: this.body[3].x - 1, y: this.body[3].y + 1},]
+        }else{
+            this.body = [{x: this.body[0].x - 2, y: this.body[0].y + 2 },
+                {x: this.body[1].x - 1, y: this.body[1].y + 1},
+                {x: this.body[2].x, y: this.body[2].y},  {x: this.body[3].x + 1, y: this.body[3].y - 1},]
+        }
+
     }
     moveRight(): void {this.body = this.body.map(p => ({x: p.x +1, y: p.y})).slice();}
     moveLeft(): void {this.body = this.body.map(p => ({x: p.x - 1, y: p.y})).slice();}
@@ -47,7 +53,7 @@ export function getRandomFigure(){
 
 // ====
 export function getFigureOne(){
-    return new FigureOne([{x: 8, y:0},{x: 7, y:0},{x: 6, y:0},{x: 5, y:0}]);
+    return new FigureOne([{x: 5, y:0},{x: 6, y:0},{x: 7, y:0},{x: 8, y:0}]);
     // return [{x: 8, y:0},{x: 7, y:0},{x: 6, y:0},{x: 5, y:0}]
 }
 

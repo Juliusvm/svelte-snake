@@ -75,6 +75,18 @@
                 accumulatedPieces = [...accumulatedPieces, ...fallingPiece.body.slice()];
                 fallingPiece = getFigureOne();
             }else{fallingPiece.moveDown();}
+
+            let shouldRemoveRow = true;
+            for(let y = 0; y < cols; y++){
+                for(let i = 0; i < rows; i++){
+                    if(!accumulatedPieces.find(s => s.x == i && s.y == y)){
+                        shouldRemoveRow = false;
+                    }
+                }
+            }
+
+
+            console.log(shouldRemoveRow)
             paintSnake();
 
         }, 500)
@@ -95,10 +107,10 @@
                         {/if}
                         {#if cells[y][x] === "fruit"}
                             <!--                            <img alt="123" class="h-12 h-12 object-contain" src={fruit}/>-->
-                            <div class={"h-12 w-12 bg-green-500"}></div>
+                            <div class={"h-12 w-12 bg-green-500 border-2"}></div>
                         {/if}
                         {#if cells[y][x] === "player"}
-                            <div class={"h-12 w-12 bg-green-400"}></div>
+                            <div class={"h-12 w-12 bg-green-500 border-2"}></div>
                         {/if}
                     {/each}
                 </div>
