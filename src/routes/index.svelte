@@ -1,7 +1,7 @@
 <script context="module" lang="ts">
     export const prerender = true;
-    import SnakeBoard from "../lib/SnakeBoard.svelte";
-    import Tetris from "../lib/Tetris.svelte";
+    import SnakeBoard from "./snake.svelte";
+    import Tetris from "./tetris.svelte";
 </script>
 <!--<Tetris/>-->
-<SnakeBoard/>
+<!--<SnakeBoard/>-->

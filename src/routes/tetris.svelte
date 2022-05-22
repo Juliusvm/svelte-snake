@@ -84,7 +84,6 @@
 
 
 </script>
-<h1 class="text-white text-7xl absolute top-1/3">Hej</h1>
 <div class="flex flex-row justify-center absolute left-1/3 mt-20">
     <div>
         {#each cells as cell, y}

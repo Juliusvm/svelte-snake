@@ -1,6 +1,6 @@
 <script lang="ts">
-    import fruit from './assets/fruit.svg';
-    import backgroundGif from './assets/background.gif';
+    import fruit from '../lib/assets/fruit.svg';
+    import backgroundGif from '../lib/assets/background.gif';
     import type {Cell} from '../cell';
     import {generateCells, generateRandom, getInitialFruits, getInitialSnake} from "../logic/snake_logic";
     import {scores} from '../store';
@@ -219,18 +219,18 @@
 
 
 
-<div class="bg-[#305078] absolute flex flex-col gap-5 p-5">
-    <h1 class="text-3xl text-white">Settings:</h1>
-    <label class="text-2xl text-white">
-        <input type=checkbox bind:checked={runThroughWalls}>
-        Run through walls
-    </label>
-    <div class="border-b-2"></div>
-    <h1 class="text-2xl text-white">High score</h1>
-    {#each $scores as score}
-        <h1 class="text-white">{score.id} - {score.score}</h1>
-    {/each}
-</div>
+<!--<div class="bg-[#305078] absolute flex flex-col gap-5 p-5">-->
+<!--    <h1 class="text-3xl text-white">Settings:</h1>-->
+<!--    <label class="text-2xl text-white">-->
+<!--        <input type=checkbox bind:checked={runThroughWalls}>-->
+<!--        Run through walls-->
+<!--    </label>-->
+<!--    <div class="border-b-2"></div>-->
+<!--    <h1 class="text-2xl text-white">High score</h1>-->
+<!--    {#each $scores as score}-->
+<!--        <h1 class="text-white">{score.id} - {score.score}</h1>-->
+<!--    {/each}-->
+<!--</div>-->
 
 <div class="flex flex-row justify-center absolute left-1/3 mt-20">
     <div>

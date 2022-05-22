@@ -1,4 +1,5 @@
 <script context="module" lang="ts">
+    import Drawer from "../lib/Drawer.svelte";
     import "../app.css";
     import { initializeApp } from "firebase/app";
     import { getFirestore, collection,onSnapshot,where, setDoc,doc, query } from 'firebase/firestore';
@@ -35,5 +36,6 @@
 
 
 </script>
-<img src={arcade} alt="this slowpoke moves" class="w-full h-full absolute"/>
+<!--<img src={arcade} alt="this slowpoke moves" class="w-full h-full absolute z-0"/>-->
+<Drawer/>
 <slot />

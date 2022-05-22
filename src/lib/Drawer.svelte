@@ -1,31 +1,54 @@
 <script>
-
-    let drawer;
-
-    const openDrawer = ()=>{
-
-        drawer.addEventListener('sl-hide', (event) => console.log('hide'));
-        drawer.show();
-
-    };
+    import { page } from '$app/stores';
+    let open = true;
+    let selectedPage = $page.url.pathname.includes("snake") ? "snake" : "tetris"
+    import { navigating } from '$app/stores';
+    function myFunction(){
+        selectedPage = $navigating.to.pathname.includes("snake") ? "snake" : "tetris"
+    }
+    $: if($navigating) myFunction();
 
 </script>
+<style>
+    .drawer-opened {
+        transform: translateX(0);
+        transition-duration: 0.5s;
+    }
 
-<button on:click={openDrawer}>Open</button>
+    .drawer-closed {
+        transform: translateX(-130px);
+        transition-duration: 0.5s;
+    }
+    h1{
+        color: #818181;
+        cursor: pointer;
+        font-size: 2rem;
+    }
+    h1:hover{
+        color: white;
+        transition-duration: 500ms;
+    }
+    .h1-selected{
+        color: white;
+    }
+</style>
 
-<sl-drawer label="Drawer" class="drawer menu" bind:this={drawer}>
+<div class={"absolute w-40 h-screen bg-[#00080f] " + (open ? "drawer-opened" : "drawer-closed")}>
+    {#if open}
+        <button class="bg-white" on:click={() => {open = !open;}}>
+            Close
+        </button>
+    {/if}
+    {#if !open}
+        <div class="flex flex-row justify-end">
+            <button class="bg-white" on:click={() => {open = !open;}}>
+                Open
+            </button>
+        </div>
+    {/if}
 
-    <sl-select>
-        <sl-menu-item value="option-1">Option 1</sl-menu-item>
-        <sl-menu-item value="option-2">Option 2</sl-menu-item>
-        <sl-menu-item value="option-3">Option 3</sl-menu-item>
-    </sl-select>
-
-</sl-drawer>
-
-<svelte:head>
-
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.0.0-beta.34/dist/themes/base.css">
-    <script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.0.0-beta.34/dist/shoelace.js"></script>
-
-</svelte:head>
+    <div class="p-10">
+        <h1 class={selectedPage === "snake" ? "h1-selected" : ""}><a href="/snake">Snake</a></h1>
+        <h1 class={selectedPage === "tetris" ? "h1-selected" : ""}><a href="/tetris">Tetris</a></h1>
+    </div>
+</div>
