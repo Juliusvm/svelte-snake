@@ -8,13 +8,13 @@
         getFigureOne,
         getFigureSeven,
         getFigureSix,
-        getFigureTwo, getRandomFigure
+        getFigureTwo, getRandomFigure, handleCollision, willCollideWithAccumulatedPieces, willExceedRow
     } from "../logic/tetris_logic";
 
     let fruitEaten = 0;
 
-    const cols = 20;
-    const rows = 14;
+    const rows = 20;
+    const cols = 14;
     let cells = [];
     let fallingPiece: Figure =  getFigureOne();
     let accumulatedPieces: Cell[] =  [];
@@ -25,7 +25,7 @@
 
 
 
-    cells = generateCells(cols, rows);
+    cells = generateCells(rows, cols);
 
 
 
@@ -40,7 +40,7 @@
             fallingPiece.moveLeft();
         }
         if (event.key === 'ArrowDown') {
-            fallingPiece.moveDown();
+            fallingPiece.moveDown(accumulatedPieces, rows);
         }
         if (event.key === 'ArrowUp') {
             fallingPiece.rotateRight();
@@ -49,8 +49,8 @@
     }
 
     function paintSnake() {
-        for (let y = 0; y <= cols; y++) {
-            for (let j = 0; j <= rows; j++) {
+        for (let y = 0; y <= rows; y++) {
+            for (let j = 0; j <= cols; j++) {
                 if (fallingPiece.body.filter(s => (s.y === y && s.x === j)).length > 0) {
                     cells[y][j] = "player";
                 } else if (accumulatedPieces.filter(s => (s.y === y && s.x === j)).length > 0) {
@@ -64,29 +64,20 @@
 
     paintSnake();
 
+
+
     function startTimer() {
         setInterval(() => {
-
-            if( accumulatedPieces.filter(aP => fallingPiece.body.find(p => (p.y + 1 === aP.y && p.x === aP.x))).length > 0){
+            if( willCollideWithAccumulatedPieces(accumulatedPieces, fallingPiece)){
                 accumulatedPieces = [...accumulatedPieces, ...fallingPiece.body.slice()];
                 fallingPiece = getFigureOne();
             }
-            else if(fallingPiece.body.filter( p => p.y >= (cols)).length > 0){
+            else if(willExceedRow(rows, fallingPiece)){
                 accumulatedPieces = [...accumulatedPieces, ...fallingPiece.body.slice()];
                 fallingPiece = getFigureOne();
-            }else{fallingPiece.moveDown();}
+            }else{fallingPiece.moveDown(accumulatedPieces, rows);}
 
-            let shouldRemoveRow = true;
-            for(let y = 0; y < cols; y++){
-                for(let i = 0; i < rows; i++){
-                    if(!accumulatedPieces.find(s => s.x == i && s.y == y)){
-                        shouldRemoveRow = false;
-                    }
-                }
-            }
-
-
-            console.log(shouldRemoveRow)
+            accumulatedPieces = handleCollision(rows, cols, accumulatedPieces);
             paintSnake();
 
         }, 500)

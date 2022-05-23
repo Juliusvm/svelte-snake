@@ -6,7 +6,8 @@ export interface Figure{
     rotateRight(): void;
     moveRight(): void;
     moveLeft(): void;
-    moveDown(): void;
+
+    moveDown(accumulatedPieces: Cell[], rows:number): void;
 }
 
 class FigureOne implements Figure{
@@ -26,8 +27,12 @@ class FigureOne implements Figure{
     }
     moveRight(): void {this.body = this.body.map(p => ({x: p.x +1, y: p.y})).slice();}
     moveLeft(): void {this.body = this.body.map(p => ({x: p.x - 1, y: p.y})).slice();}
-    moveDown(): void {this.body = this.body.map(p => {return {x: p.x, y: p.y + 1}}).slice()}
 
+    moveDown(accumulatedPieces: Cell[], rows:number): void {
+        if(!willCollideWithAccumulatedPieces(accumulatedPieces, this) && !willExceedRow(rows, this)){
+            this.body = this.body.map(p => {return {x: p.x, y: p.y + 1}}).slice()
+        }
+    }
 }
 
 
@@ -93,4 +98,40 @@ export function getFigureSix(){
 //  ==
 export function getFigureSeven(){
     return [{x: 6, y:0},{x: 7, y:1},{x: 7, y:0},{x: 8, y:1}]
+}
+
+
+export function handleCollision(rows: number, cols: number, accumulatedPieces: Cell[]){
+    let newAccumulatedPieces = accumulatedPieces.slice();
+    let shouldRemoveRow = true;
+    let rowToRemove = -1;
+    for(let y = 0; y <= rows; y++){
+        rowToRemove = y;
+        shouldRemoveRow = true;
+        for(let i = 0; i < cols; i++){
+            if(!accumulatedPieces.find(s => s.x == i && s.y == y)){
+                shouldRemoveRow = false;
+            }
+        }
+        if(shouldRemoveRow){
+
+            // Remove row
+            newAccumulatedPieces = accumulatedPieces.filter(aP => aP.y != rowToRemove).slice();
+
+            // Move all pieces above row down
+            newAccumulatedPieces = newAccumulatedPieces.filter(aP => aP.y < rowToRemove).map(aP => ({...aP, y: aP.y + 1})).slice();
+
+            return newAccumulatedPieces;
+        }
+    }
+    return newAccumulatedPieces;
+}
+
+export function willCollideWithAccumulatedPieces(accumulatedPieces: Cell[], fallingPiece: Figure) {
+    return accumulatedPieces.filter(aP => fallingPiece.body.find(p => (p.y + 1 === aP.y && p.x === aP.x))).length > 0
+}
+
+
+export function willExceedRow(rows: number, fallingPiece: Figure) {
+    return fallingPiece.body.filter( p => p.y >= (rows)).length > 0
 }

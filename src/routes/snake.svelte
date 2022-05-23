@@ -14,7 +14,7 @@
     let fruits: Cell[] = getInitialFruits();
     let interval;
     let direction = ""
-    let username = "";
+    let username = "Julius";
     let inputUsername = "";
     let key;
     let keyCode;

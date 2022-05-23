@@ -1,10 +1,10 @@
 <script>
     import { page } from '$app/stores';
     let open = true;
-    let selectedPage = $page.url.pathname.includes("snake") ? "snake" : "tetris"
+    let selectedPage = $page.url.pathname.replace("/", "")
     import { navigating } from '$app/stores';
     function myFunction(){
-        selectedPage = $navigating.to.pathname.includes("snake") ? "snake" : "tetris"
+        selectedPage = $navigating.to.pathname.replace("/", "");
     }
     $: if($navigating) myFunction();
 
@@ -48,6 +48,7 @@
     {/if}
 
     <div class="p-10">
+        <h1 class={selectedPage === "home" ? "h1-selected" : ""}><a href="/home">Home</a></h1>
         <h1 class={selectedPage === "snake" ? "h1-selected" : ""}><a href="/snake">Snake</a></h1>
         <h1 class={selectedPage === "tetris" ? "h1-selected" : ""}><a href="/tetris">Tetris</a></h1>
     </div>
