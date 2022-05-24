@@ -3,6 +3,7 @@
     import type {Cell} from '../cell';
     import {generateCells, generateRandom, getInitialFruits, getInitialSnake} from "../logic/snake_logic";
     import {scores} from '../store';
+    import {setSnakeScore} from "../initFirestore";
 
     let gameOver = false;
     let fruitEaten = 0;

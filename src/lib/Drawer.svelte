@@ -31,18 +31,22 @@
     .h1-selected{
         color: white;
     }
+    .expand-button{
+        color: white;
+        font-size: 4rem;
+    }
 </style>
 
 <div class={"absolute w-40 h-screen bg-[#00080f] " + (open ? "drawer-opened" : "drawer-closed")}>
     {#if open}
-        <button class="bg-white" on:click={() => {open = !open;}}>
-            Close
+        <button class="expand-button" on:click={() => {open = !open;}}>
+            ->
         </button>
     {/if}
     {#if !open}
         <div class="flex flex-row justify-end">
-            <button class="bg-white" on:click={() => {open = !open;}}>
-                Open
+            <button class="expand-button" on:click={() => {open = !open;}}>
+                ==
             </button>
         </div>
     {/if}
