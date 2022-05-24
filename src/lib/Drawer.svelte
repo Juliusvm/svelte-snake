@@ -52,7 +52,7 @@
     {/if}
 
     <div class="p-10">
-        <h1 class={selectedPage === "home" ? "h1-selected" : ""}><a href="/home">Home</a></h1>
+        <h1 class={selectedPage === "" ? "h1-selected" : ""}><a href="/">Home</a></h1>
         <h1 class={selectedPage === "snake" ? "h1-selected" : ""}><a href="/snake">Snake</a></h1>
         <h1 class={selectedPage === "tetris" ? "h1-selected" : ""}><a href="/tetris">Tetris</a></h1>
     </div>
