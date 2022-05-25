@@ -33,8 +33,10 @@
   },
   "type": "module",
   "dependencies": {
+    "@bulatdashiev/svelte-slider": "^1.0.3",
     "firebase": "^9.8.1",
     "rxfire": "^6.0.3",
-    "rxjs": "^7.5.5"
+    "rxjs": "^7.5.5",
+    "svelte-infinite-scroll": "^2.0.1"
   }
 }

@@ -7,17 +7,17 @@
     <h1 class="text-7xl text-white">
         Welcome
     </h1>
-    <label>
-        <input class="w-10 h-10" type="checkbox" bind:checked={visible}>
-        visible
-    </label>
-    {#if visible}
-        <p
-                class="bg-white h-20 w-20 absolute top-10"
-                transition:fly="{{ y: 200, duration: 500 }}"
-        >
-        </p>
-    {/if}
+<!--    <label>-->
+<!--        <input class="w-10 h-10" type="checkbox" bind:checked={visible}>-->
+<!--        visible-->
+<!--    </label>-->
+    <!--{#if visible}-->
+    <!--    <p-->
+    <!--            class="bg-white h-20 w-20 absolute top-10"-->
+    <!--            transition:fly="{{ y: 200, duration: 500 }}"-->
+    <!--    >-->
+    <!--    </p>-->
+    <!--{/if}-->
 </div>
 
 

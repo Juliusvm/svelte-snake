@@ -38,18 +38,18 @@
 </style>
 
 <div class={"absolute w-40 h-screen bg-[#00080f] " + (open ? "drawer-opened" : "drawer-closed")}>
-    {#if open}
-        <button class="expand-button" on:click={() => {open = !open;}}>
-            ->
-        </button>
-    {/if}
-    {#if !open}
-        <div class="flex flex-row justify-end">
-            <button class="expand-button" on:click={() => {open = !open;}}>
-                ==
-            </button>
-        </div>
-    {/if}
+    <!--{#if open}-->
+    <!--    <button class="expand-button" on:click={() => {open = !open;}}>-->
+    <!--        ->-->
+    <!--    </button>-->
+    <!--{/if}-->
+    <!--{#if !open}-->
+    <!--    <div class="flex flex-row justify-end">-->
+    <!--        <button class="expand-button" on:click={() => {open = !open;}}>-->
+    <!--            ==-->
+    <!--        </button>-->
+    <!--    </div>-->
+    <!--{/if}-->
 
     <div class="p-10">
         <h1 class={selectedPage === "" ? "h1-selected" : ""}><a href="/">Home</a></h1>

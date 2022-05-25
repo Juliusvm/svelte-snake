@@ -3,14 +3,15 @@
     import type {Cell} from '../cell';
     import {generateCells, generateRandom, getInitialFruits, getInitialSnake} from "../logic/snake_logic";
     import {scores} from '../store';
+    import Slider from '@bulatdashiev/svelte-slider';
     import {setSnakeScore} from "../initFirestore";
     import { fly, blur } from 'svelte/transition';
 
     let gameOver = false;
     let fruitEaten = 0;
 
-    const cols = 12;
-    const rows = 16;
+    const cols = 24;
+    const rows = 32;
     let cells = [];
     let snake: Cell[] = getInitialSnake();
     let fruits: Cell[] = getInitialFruits();
@@ -21,6 +22,7 @@
     let key;
     let keyCode;
     let runThroughWalls = false;
+    let speed = 100;
 
 
     function willCollideWithItself(snake, x: number, y: number) {
@@ -130,8 +132,8 @@
         }
     }
 
-    function startTimer() {
-        setInterval(() => {
+    function startTimer(sped) {
+        return setInterval(() => {
             if (direction == "right") {
                 moveRight();
             }
@@ -146,10 +148,17 @@
             }
             paintSnake();
 
-        }, 100)
+        }, sped)
     }
 
-    interval = startTimer();
+    interval = startTimer(speed);
+
+
+    function increaseSpeed (){
+        clearInterval(interval);
+        interval = startTimer(speed);
+    }
+
 
     cells = generateCells(cols, rows);
 
@@ -215,8 +224,18 @@
 
 </script>
 
+<style>
+    .cell{@apply h-6 w-6;}
+    .label-large{
+        @apply text-3xl text-white;
+    }
+    .label-small{
+        @apply text-2xl text-white;
+    }
+</style>
 
-<div class="flex flex-row justify-center absolute left-1/3 mt-20">
+
+<div class="flex flex-row justify-center absolute left-1/3 mt-20 bg-black">
     <div class="flex flex-row justify-center p-2 absolute left-0 z-50">
         <h1 class="text-3xl text-green-500">{fruitEaten}</h1>
     </div>
@@ -226,27 +245,45 @@
                 <div class="flex flex-row">
                     {#each cell as c, x}
                         {#if cells[y][x] === "cell"}
-                            <div class={"h-12 w-12 bg-black opacity-90"}></div>
+                            <div class={"cell bg-black opacity-90"}></div>
                         {/if}
                         {#if cells[y][x] === "fruit"}
                             <!--                            <img alt="123" class="h-12 h-12 object-contain" src={fruit}/>-->
-                            <div class={"h-12 w-12 bg-green-500"}></div>
+                            <div class={"cell bg-green-500"}></div>
                         {/if}
                         {#if cells[y][x] === "player"}
-                            <div class={"h-12 w-12 bg-green-400 animate-pulse"}></div>
+                            <div class={"cell bg-green-400 animate-pulse"}></div>
                         {/if}
                     {/each}
                 </div>
             </div>
         {/each}
-        <div class="bg-[#305078] flex flex-col gap-5 p-5">
-            <h1 class="text-3xl text-white">Settings:</h1>
-            <label class="text-2xl text-white">
+        <div class="bg-[#305078] flex flex-col gap-5 p-5 border-2 mt-2">
+            <div class="flex flex-row justify-center pb-3"><h1 class="text-3xl text-white">Settings</h1></div>
+            <label class="label-small">
                 <input type=checkbox bind:checked={runThroughWalls}>
                 Run through walls
             </label>
             <div class="border-b-2"></div>
-            <h1 class="text-2xl text-white">High score</h1>
+            <label class="label-small">Current speed: {speed}</label>
+            <div class="flex flex-row gap-5">
+                <label class="label-large">
+                    <input on:change={() => {speed = 300; increaseSpeed();}} type=radio bind:group={speed} name="scoops" value={300}>
+                    Slow
+                </label>
+
+                <label class="label-small">
+                    <input on:change={() => {speed = 200; increaseSpeed();}} type=radio bind:group={speed} name="scoops" value={200}>
+                    Medium
+                </label>
+
+                <label class="label-small">
+                    <input on:change={() => {speed = 40; increaseSpeed();}} type=radio bind:group={speed} name="scoops" value={50}>
+                    Fast
+                </label>
+            </div>
+            <div class="border-b-2"></div>
+            <h1 class="label-small">High score</h1>
             {#each $scores as score}
                 <h1 class="text-white">{score.id} - {score.score}</h1>
             {/each}
@@ -258,10 +295,11 @@
             <div class="flex flex-row justify-center ">
                 <button class="text-white text-2xl p-4 border-2 m-5 hover:bg-green-500" on:click={() => {
                      fruitEaten = 0;
-                gameOver = false;
-                snake = getInitialSnake().slice();
-                fruits = getInitialFruits().slice();
-                paintSnake();
+                    gameOver = false;
+                    snake = getInitialSnake().slice();
+                    fruits = getInitialFruits().slice();
+                    increaseSpeed();
+                    paintSnake();
             }}>Play again!
                 </button>
             </div>
@@ -271,7 +309,7 @@
         <div class="text-3xl p-10 text-red-700 absolute top-1/3  bg-[#305078]">
             <div class="">
                 <div class="flex flex-col gap-3">
-                    <h1 class="text-2xl text-white pb-2">Please enter your name</h1>
+                    <h1 class="label-large pb-2">Please enter your name</h1>
                     <input bind:value={inputUsername} type="text" class="mr-2"/>
                 </div>
                 <h1 class="text-3xl text-white pt-4 pb-2">{username}</h1>
