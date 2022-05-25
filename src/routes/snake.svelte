@@ -3,9 +3,6 @@
     import type {Cell} from '../cell';
     import {generateCells, generateRandom, getInitialFruits, getInitialSnake} from "../logic/snake_logic";
     import {scores} from '../store';
-    import Slider from '@bulatdashiev/svelte-slider';
-    import {setSnakeScore} from "../initFirestore";
-    import { fly, blur } from 'svelte/transition';
 
     let gameOver = false;
     let fruitEaten = 0;
