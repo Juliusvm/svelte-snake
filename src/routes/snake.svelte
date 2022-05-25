@@ -22,7 +22,7 @@
     let key;
     let keyCode;
     let runThroughWalls = false;
-    let speed = 100;
+    let speed = 50;
 
 
     function willCollideWithItself(snake, x: number, y: number) {
@@ -265,20 +265,20 @@
                 Run through walls
             </label>
             <div class="border-b-2"></div>
-            <label class="label-small">Current speed: {speed}</label>
+            <label class="label-small">Speed</label>
             <div class="flex flex-row gap-5">
-                <label class="label-large">
-                    <input on:change={() => {speed = 300; increaseSpeed();}} type=radio bind:group={speed} name="scoops" value={300}>
+                <label class="label-small">
+                    <input on:change={() => {speed = 200; increaseSpeed();}} type=radio bind:group={speed} name="scoops" value={200}>
                     Slow
                 </label>
 
                 <label class="label-small">
-                    <input on:change={() => {speed = 200; increaseSpeed();}} type=radio bind:group={speed} name="scoops" value={200}>
+                    <input on:change={() => {speed = 100; increaseSpeed();}} type=radio bind:group={speed} name="scoops" value={100}>
                     Medium
                 </label>
 
                 <label class="label-small">
-                    <input on:change={() => {speed = 40; increaseSpeed();}} type=radio bind:group={speed} name="scoops" value={50}>
+                    <input on:change={() => {speed = 50; increaseSpeed();}} type=radio bind:group={speed} name="scoops" value={50}>
                     Fast
                 </label>
             </div>
@@ -290,7 +290,7 @@
         </div>
     </div>
     {#if gameOver}
-        <div class="absolute top-1/3 700 bg-[#305078]">
+        <div class="absolute top-1/4 700 bg-[#305078]">
             <h1 class="text-7xl p-10 text-white">You lost! 🐍</h1>
             <div class="flex flex-row justify-center ">
                 <button class="text-white text-2xl p-4 border-2 m-5 hover:bg-green-500" on:click={() => {

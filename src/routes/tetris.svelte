@@ -14,7 +14,7 @@
     let fruitEaten = 0;
 
     const rows = 20;
-    const cols = 14;
+    const cols = 11;
     let cells = [];
     let fallingPiece: Figure =  getFigureOne();
     let accumulatedPieces: Cell[] =  [];
