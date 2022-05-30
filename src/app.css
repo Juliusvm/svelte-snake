@@ -3,6 +3,6 @@
 @tailwind utilities;
 
 body{
-    background-image: url('./src/lib/assets/arcade.jpg');
+    background-image: url('../static/arcade.jpg');
     background-size: cover;
 }
