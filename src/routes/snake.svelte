@@ -1,5 +1,4 @@
 <script lang="ts">
-    import fruit from '../lib/assets/fruit.svg';
     import type {Cell} from '../cell';
     import {generateCells, generateRandom, getInitialFruits, getInitialSnake} from "../logic/snake_logic";
     import {scores} from '../store';
